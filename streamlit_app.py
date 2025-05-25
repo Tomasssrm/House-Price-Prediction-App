@@ -6,12 +6,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import us
+import requests
 import joblib
 import time
+import io
 from matplotlib.ticker import FuncFormatter
 @st.cache_data
 def load_clean_data():
-    df = pd.read_csv('Data/Real_Estate_Model.csv')
+    url = "https://drive.google.com/file/d/1AxRmuvp0CfCTAYMx9YiGXSjawyEv6Xlw/view?usp=sharing"
+    response = requests.get(url)
+    response.raise_for_status()
+    df = pd.read_csv(io.StringIO(response.text), delimiter=',')
     df['city'] = df['city'].astype('category')
     df['state'] = df['state'].astype('category')
     df['zip_code'] = df['zip_code'].astype('category')
@@ -21,12 +26,18 @@ def load_clean_data():
 
 @st.cache_resource
 def load_model():
-    model, feature_columns = joblib.load('Models/Best_Model.pkl')
+    url = "https://drive.google.com/file/d/1dQsaRztogmvGRYyNYTiMLEPttrPt3TZq/view?usp=sharing"
+    response = requests.get(url)
+    response.raise_for_status()
+    model, feature_columns = joblib.load(io.BytesIO(response.content))
     return model, feature_columns
 
 @st.cache_resource
 def load_low_model():
-    model_low, feature_columns_low = joblib.load('Models/Best_low_model.pkl')
+    url = "https://drive.google.com/file/d/1qonfJBIToI9Xzcm08cNcZqhS4tm6pVVn/view?usp=sharing"
+    response = requests.get(url)
+    response.raise_for_status()
+    model_low, feature_columns_low = joblib.load(io.BytesIO(response.content))
     return model_low, feature_columns_low
 
 data = load_clean_data()
