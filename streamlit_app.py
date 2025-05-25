@@ -11,12 +11,12 @@ import joblib
 import time
 import io
 from matplotlib.ticker import FuncFormatter
-@st.cache_data
+from huggingface_hub import hf_hub_download
+
+repo_id = "tomasssrm/house-price-prediction-app"
 def load_clean_data():
-    url = "https://drive.google.com/file/d/1AxRmuvp0CfCTAYMx9YiGXSjawyEv6Xlw/view?usp=sharing"
-    response = requests.get(url)
-    response.raise_for_status()
-    df = pd.read_csv(io.StringIO(response.text), delimiter=',')
+    data_file_path = hf_hub_download(repo_id=repo_id, filename="Real_Estate_Model.csv")
+    df = pd.read_csv(data_file_path)
     df['city'] = df['city'].astype('category')
     df['state'] = df['state'].astype('category')
     df['zip_code'] = df['zip_code'].astype('category')
@@ -26,18 +26,14 @@ def load_clean_data():
 
 @st.cache_resource
 def load_model():
-    url = "https://drive.google.com/file/d/1dQsaRztogmvGRYyNYTiMLEPttrPt3TZq/view?usp=sharing"
-    response = requests.get(url)
-    response.raise_for_status()
-    model, feature_columns = joblib.load(io.BytesIO(response.content))
+    model_file_path = hf_hub_download(repo_id=repo_id, filename="Best_Model.pkl")
+    model, feature_columns = joblib.load(model_file_path)
     return model, feature_columns
 
 @st.cache_resource
 def load_low_model():
-    url = "https://drive.google.com/file/d/1qonfJBIToI9Xzcm08cNcZqhS4tm6pVVn/view?usp=sharing"
-    response = requests.get(url)
-    response.raise_for_status()
-    model_low, feature_columns_low = joblib.load(io.BytesIO(response.content))
+    low_model_file_path = hf_hub_download(repo_id=repo_id, filename="Best_low_model.pkl")
+    model_low, feature_columns_low = joblib.load(low_model_file_path)
     return model_low, feature_columns_low
 
 data = load_clean_data()
