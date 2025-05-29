@@ -1,2 +1,4 @@
 venv/
 Data/
+Models/tuned_lgbm_model.pkl
+Models/tuned_lgbm_model_below_300k.pkl

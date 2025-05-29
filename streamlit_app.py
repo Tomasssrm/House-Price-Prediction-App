@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import us
-import requests
+import pickle
 import joblib
 import time
 import io
@@ -14,6 +14,7 @@ from matplotlib.ticker import FuncFormatter
 from huggingface_hub import hf_hub_download
 
 repo_id = "tomasssrm/house-price-prediction-app"
+@st.cache_data
 def load_clean_data():
     data_file_path = hf_hub_download(repo_id=repo_id, filename="Real_Estate_Model.csv")
     df = pd.read_csv(data_file_path)
@@ -26,19 +27,21 @@ def load_clean_data():
 
 @st.cache_resource
 def load_model():
-    model_file_path = hf_hub_download(repo_id=repo_id, filename="Best_Model.pkl")
-    model, feature_columns = joblib.load(model_file_path)
-    return model, feature_columns
+    model_file_path = hf_hub_download(repo_id=repo_id, filename="tuned_lgbm_model.pkl")
+    with open(model_file_path, 'rb') as f:
+        model = pickle.load(f)
+    return model
 
 @st.cache_resource
 def load_low_model():
-    low_model_file_path = hf_hub_download(repo_id=repo_id, filename="Best_low_model.pkl")
-    model_low, feature_columns_low = joblib.load(low_model_file_path)
-    return model_low, feature_columns_low
+    low_model_file_path = hf_hub_download(repo_id=repo_id, filename="tuned_lgbm_model_below_300k.pkl")
+    with open(low_model_file_path, 'rb') as f:
+        model_low = pickle.load(f)
+    return model_low
 
 data = load_clean_data()
-model, feature_columns = load_model()
-model_low, feature_columns_low = load_low_model()
+model = load_model()
+model_low = load_low_model()
 
 
 #App layout
@@ -98,7 +101,7 @@ filtered_zip_codes = data[(data['state'] == state) & (data['city'] == city)]['zi
 # Other inputs
 bed = st.sidebar.number_input("Number of Bedrooms", min_value=1, max_value=10, value=3, step=1)
 bath = st.sidebar.number_input("Number of Bathrooms", min_value=1, max_value=10, value=3, step=1)
-house_size = st.sidebar.number_input("House Size (SQFT)", min_value=200, max_value=10000, value=1000, step=500)
+house_size = st.sidebar.number_input("House Size (SQFT)", min_value=200, max_value=10000, value=2000, step=500)
 
 if page == "Prediction":
     st.markdown("<div class='title'>House Price Prediction App</div>", unsafe_allow_html=True)
@@ -108,6 +111,7 @@ if page == "Prediction":
     """)
 
     if st.button("Predict House Price"):
+        feature_columns = ['bed', 'bath', 'state', 'city', 'house_size']
         input_data = pd.DataFrame({
             "state": [state],
             "city": [city],
