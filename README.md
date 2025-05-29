@@ -33,22 +33,22 @@ The models that I tested were:
 - A single model yielded **~35% MAPE** on homes <\$300 K vs **~15% MAPE** on homes ≥\$300 K.  
 - Splitting the dataset into “low-price” and “high-price” segments reduced MAPE in the low segment to **24%**.
 
-### The best-performing model was: LightGBM Regressor.
-Overall performance metrics:
-MAE: 73668.1104
-RMSE: 110551.1297
-MAPE: 0.2403
-R2 Score: 0.7400
-MAPE by segment: 
-segment
-<300k        35.216622
-300k-400k    15.646312
-400k-500k    15.309972
-500k-1M      16.850587
+### The best-performing and most efficient model was: LightGBM Regressor.
+- Overall performance metrics:
+- MAE: 73668.1104
+- RMSE: 110551.1297
+- MAPE: 0.2403
+- R2 Score: 0.7400
+- MAPE by segment: 
+- segment
+- <300k        35.216622
+- 300k-400k    15.646312
+- 400k-500k    15.309972
+- 500k-1M      16.850587
 
 Performance of model with houses below $300000:
-MAPE: 24%.
-MAE: 36482.
+- MAPE: 24%.
+- MAE: 36482.
 By making another model for houses below $300000, I was able to decrease the mape from 35% to 24% for houses in that range. 
 
 Author Tomas Rodriguez Marengo | MS in Business Analytics | Data Science & Finance Enthusiast 
