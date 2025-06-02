@@ -28,29 +28,26 @@ def load_clean_data():
 @st.cache_resource
 def load_model():
     model_file_path = hf_hub_download(repo_id=repo_id, filename="tuned_lgbm_model.pkl")
-    with open(model_file_path, 'rb') as f:
-        model = pickle.load(f)
+    model = joblib.load(model_file_path)
     return model
 
 @st.cache_resource
 def load_low_model():
     low_model_file_path = hf_hub_download(repo_id=repo_id, filename="tuned_lgbm_model_below_300k.pkl")
-    with open(low_model_file_path, 'rb') as f:
-        model_low = pickle.load(f)
+    model_low = joblib.load(low_model_file_path)
     return model_low
 
 data = load_clean_data()
 model = load_model()
 model_low = load_low_model()
 
-
 #App layout
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select a page", ["Prediction", "Visualizations"])
+page = st.sidebar.radio("**Select a page**", ["Prediction", "Market Visualizations"])
+st.sidebar.title("Enter House Details")
 st.markdown("""
     <style>
     .main {
-        background-color: #f0f0f0;
         padding: 20px;
     }
     .title {
@@ -65,23 +62,47 @@ st.markdown("""
         left: 0;
         bottom: 0;
         width: 100%;
-        background-color: #f0f2f6;
+        background-color: #D3D3D3;
         color: #4CAF50;
     }
+
+    /* --- CSS FOR INPUT WIDGET BORDERS --- */
+
+    /* For st.selectbox, st.multiselect */
+    div[data-baseweb="select"] > div:first-child {
+        border: 1px solid #A9A9A9 !important;     /* Your visible border */
+        background-color: #FFFFFF !important;     /* White background for the box */
+        border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS (e.g., 0.3rem or 5px) */
+    }
+
+    /* For st.text_input, st.date_input, st.time_input */
+    div.stTextInput>div[data-baseweb="input"],
+    div.stDateInput>div[data-baseweb="input"],
+    div.stTimeInput>div[data-baseweb="input"] {
+        border: 1px solid #A9A9A9 !important;     /* Your visible border */
+        background-color: #FFFFFF !important;     /* White background for the box */
+        border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
+    }
+
+    /* For st.number_input */
+    .stNumberInput input[type="number"] {
+        border: 1px solid #A9A9A9 !important;     /* Your visible border */
+        background-color: #FFFFFF !important;     /* White background for the box */
+        border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
+    }
+    /* --- END OF CSS --- */
     </style>
     """, unsafe_allow_html=True)
 
-st.sidebar.title("Enter House Details")
-
-# Initialize session state variables
+#Initialize session state variables
 if 'state' not in st.session_state:
     st.session_state['state'] = data['state'].unique()[1]
 if 'city' not in st.session_state:
     st.session_state['city'] = None
 
-# State selection
+#State selection
 state_options = data['state'].unique()
-state = st.sidebar.selectbox("State", options=state_options, index=list(state_options).index(st.session_state['state']))
+state = st.sidebar.selectbox("**State**", options=state_options, index=list(state_options).index(st.session_state['state']))
 st.session_state['state'] = state
 
 # Filter cities based on selected state
@@ -92,22 +113,21 @@ if st.session_state['city'] not in filtered_cities:
     st.session_state['city'] = filtered_cities[0]
 
 # City selection
-city = st.sidebar.selectbox("City", options=filtered_cities, index=list(filtered_cities).index(st.session_state['city']))
+city = st.sidebar.selectbox("**City**", options=filtered_cities, index=list(filtered_cities).index(st.session_state['city']))
 st.session_state['city'] = city
 
 # Filter zip codes based on selected city
 filtered_zip_codes = data[(data['state'] == state) & (data['city'] == city)]['zip_code'].unique()
 
 # Other inputs
-bed = st.sidebar.number_input("Number of Bedrooms", min_value=1, max_value=10, value=3, step=1)
-bath = st.sidebar.number_input("Number of Bathrooms", min_value=1, max_value=10, value=3, step=1)
-house_size = st.sidebar.number_input("House Size (SQFT)", min_value=200, max_value=10000, value=2000, step=500)
+bed = st.sidebar.number_input("**Number of Bedrooms**", min_value=1, max_value=10, value=3, step=1)
+bath = st.sidebar.number_input("**Number of Bathrooms**", min_value=1, max_value=10, value=3, step=1)
+house_size = st.sidebar.number_input("**House Size (SQFT)**", min_value=200, max_value=10000, value=2000, step=500)
 
 if page == "Prediction":
-    st.markdown("<div class='title'>House Price Prediction App</div>", unsafe_allow_html=True)
+    st.markdown("<div class='title'>House Price Predictor</div>", unsafe_allow_html=True)
     st.write("""
-    Welcome to the House Price Prediction APP!
-    This app lets you predict house prices based on key factors such as number of bathrooms, number of bedrooms, house size, state, and city.
+    **Welcome!** This app predicts house prices based on key features like the number of bathrooms, bedrooms, house size, and location (state and city). Adjust the inputs in the sidebar to see the estimated price and potential down payment. Explore the 'Market Visualizations' page (select from the sidebar at the left of the page) for more in-depth charts and housing market trends.
     """)
 
     if st.button("Predict House Price"):
@@ -121,7 +141,7 @@ if page == "Prediction":
         })
         input_data['state'] = input_data['state'].astype('category')
         input_data['city'] = input_data['city'].astype('category')
-        input_data = input_data[feature_columns]  # Ensure order matches training
+        input_data = input_data[feature_columns] 
 
         initial_prediction = model.predict(input_data)[0]
         if initial_prediction < 300000:
@@ -152,10 +172,6 @@ if page == "Prediction":
         # Median line in red with label
         ax.axvline(median_price, color='red', linestyle='dashed', linewidth=2, label=f"Median: ${median_price:,.0f}")
 
-        # Add median text above the line, adjusting the y-position to prevent overlap
-        #ax.text(median_price, ax.get_ylim()[1] * 0.85, f"${median_price:,.0f}", 
-            #color='red', fontsize=12, fontweight='bold', ha='center')
-
         # Labels and legend
         ax.set_title(f"House Price Distribution in {state}", fontsize=14)
         ax.set_xlabel("Price ($)", fontsize=12)
@@ -165,10 +181,9 @@ if page == "Prediction":
         st.pyplot(fig)
 
 #Page 2
-#data_2 = pd.read_csv('realtor_project.csv')
-if page == "Visualizations":
-    st.write("### Visualizations")
-    st.write("Welcome to the Visualizations page. Here you can explore different visualizations to understand the relationships between different features")
+if page == "Market Visualizations":
+    st.markdown("<div class='title'>Housing Market Visualizations</div>", unsafe_allow_html=True)
+    st.write("Explore interactive charts and graphs to discover information, trends, and relationships within the housing market data.")
 
     # 1. Distribution of House Prices
     st.subheader("Distribution of House Prices by State")
@@ -194,17 +209,16 @@ if page == "Visualizations":
     state_abbrev_map = {state.name: state.abbr for state in us.states.STATES}
     data_map = data.copy()
     data_map['state'] = data_map['state'].map(state_abbrev_map)
-    #data['state'] = data['state'].map(state_abbrev_map)
     state_sqft_price = (
         data_map.groupby("state")["Price_per_sqft"].median().reset_index())
     state_sqft_price = state_sqft_price.rename(columns={"Price_per_sqft": "median_price_per_sqft"})
     fig = px.choropleth(
     state_sqft_price,
-    locations="state",  # Column containing state names or abbreviations
-    locationmode="USA-states",  # Use state abbreviations for mapping
-    color="median_price_per_sqft",  # Column to color by
-    color_continuous_scale="Viridis",  # Color scale
-    scope="usa",  # Focus on the USA
+    locations="state", 
+    locationmode="USA-states",  
+    color="median_price_per_sqft", 
+    color_continuous_scale="Viridis", 
+    scope="usa",  
     title="Median Price per Square Foot by State",
     labels={"median_price_per_sqft": "Price per Sqft ($)"}
     )
@@ -230,7 +244,15 @@ if page == "Visualizations":
         color="price",
         color_continuous_scale="Blues"
     )
-
+    fig.update_layout(
+    xaxis_tickfont_color='black',  # Set x-axis tick numbers to black
+    yaxis_tickfont_color='black',  # Set y-axis tick numbers to black
+    xaxis_title_font_color='black',
+    yaxis_title_font_color='black',
+    legend_font_color='black',
+    coloraxis_colorbar_tickfont_color='black',  # Styles the numbers (tick labels) on the colorbar
+    coloraxis_colorbar_title_font_color='black'
+    )
     st.plotly_chart(fig)
 
     #4. Bottom 10 Cities by median House Price
@@ -253,6 +275,15 @@ if page == "Visualizations":
         color="price",
         color_continuous_scale="Reds"
     )
+    fig.update_layout(
+    xaxis_tickfont_color='black',  # Set x-axis tick numbers to black
+    yaxis_tickfont_color='black',  # Set y-axis tick numbers to black
+    xaxis_title_font_color='black',
+    yaxis_title_font_color='black',
+    legend_font_color='black',
+    coloraxis_colorbar_tickfont_color='black',  # Styles the numbers (tick labels) on the colorbar
+    coloraxis_colorbar_title_font_color='black'
+    )
     st.plotly_chart(fig)
     
     #5. Correlation Heatmap
@@ -262,6 +293,4 @@ if page == "Visualizations":
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
     ax.set_title("Correlation Matrix")
     st.pyplot(fig)
-
-    st.write("These are just a few visualizations that help understand the relationships between different features and house prices.")
     
