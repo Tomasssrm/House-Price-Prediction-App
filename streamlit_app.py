@@ -1,15 +1,11 @@
 import streamlit as st
 import pandas as pd
 import xgboost as xgb
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import us
-import pickle
 import joblib
-import time
-import io
 from matplotlib.ticker import FuncFormatter
 from huggingface_hub import hf_hub_download
 
