@@ -240,12 +240,12 @@ if page == "Market Visualizations":
         color_continuous_scale="Blues"
     )
     fig.update_layout(
-    xaxis_tickfont_color='black',  # Set x-axis tick numbers to black
-    yaxis_tickfont_color='black',  # Set y-axis tick numbers to black
+    xaxis_tickfont_color='black', 
+    yaxis_tickfont_color='black',  
     xaxis_title_font_color='black',
     yaxis_title_font_color='black',
     legend_font_color='black',
-    coloraxis_colorbar_tickfont_color='black',  # Styles the numbers (tick labels) on the colorbar
+    coloraxis_colorbar_tickfont_color='black', 
     coloraxis_colorbar_title_font_color='black'
     )
     st.plotly_chart(fig)
@@ -271,12 +271,12 @@ if page == "Market Visualizations":
         color_continuous_scale="Reds"
     )
     fig.update_layout(
-    xaxis_tickfont_color='black',  # Set x-axis tick numbers to black
-    yaxis_tickfont_color='black',  # Set y-axis tick numbers to black
+    xaxis_tickfont_color='black',  
+    yaxis_tickfont_color='black',  
     xaxis_title_font_color='black',
     yaxis_title_font_color='black',
     legend_font_color='black',
-    coloraxis_colorbar_tickfont_color='black',  # Styles the numbers (tick labels) on the colorbar
+    coloraxis_colorbar_tickfont_color='black', 
     coloraxis_colorbar_title_font_color='black'
     )
     st.plotly_chart(fig)
