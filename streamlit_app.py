@@ -40,6 +40,54 @@ model_low = load_low_model()
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("**Select a page**", ["Prediction", "Market Visualizations"])
 st.sidebar.title("Enter House Details")
+# st.markdown("""
+#     <style>
+#     .main {
+#         padding: 20px;
+#     }
+#     .title {
+#         text-align: center;
+#         font-size: 2em;
+#         color: #4CAF50;
+#     }
+#     .footer {
+#         text-align: center;
+#         padding: 10px;
+#         position: fixed;
+#         left: 0;
+#         bottom: 0;
+#         width: 100%;
+#         background-color: #D3D3D3;
+#         color: #4CAF50;
+#     }
+
+#     /* --- CSS FOR INPUT WIDGET BORDERS --- */
+
+#     /* For st.selectbox, st.multiselect */
+#     div[data-baseweb="select"] > div:first-child {
+#         border: 1px solid #A9A9A9 !important;     /* Your visible border */
+#         background-color: #FFFFFF !important;     /* White background for the box */
+#         border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS (e.g., 0.3rem or 5px) */
+#     }
+
+#     /* For st.text_input, st.date_input, st.time_input */
+#     div.stTextInput>div[data-baseweb="input"],
+#     div.stDateInput>div[data-baseweb="input"],
+#     div.stTimeInput>div[data-baseweb="input"] {
+#         border: 1px solid #A9A9A9 !important;     /* Your visible border */
+#         background-color: #FFFFFF !important;     /* White background for the box */
+#         border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
+#     }
+
+#     /* For st.number_input */
+#     .stNumberInput input[type="number"] {
+#         border: 1px solid #A9A9A9 !important;     /* Your visible border */
+#         background-color: #FFFFFF !important;     /* White background for the box */
+#         border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
+#     }
+#     /* --- END OF CSS --- */
+#     </style>
+#     """, unsafe_allow_html=True)
 st.markdown("""
     <style>
     .main {
@@ -65,27 +113,73 @@ st.markdown("""
 
     /* For st.selectbox, st.multiselect */
     div[data-baseweb="select"] > div:first-child {
-        border: 1px solid #A9A9A9 !important;     /* Your visible border */
-        background-color: #FFFFFF !important;     /* White background for the box */
-        border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS (e.g., 0.3rem or 5px) */
+        border: 1px solid #A9A9A9 !important;      /* Your visible border */
+        background-color: #FFFFFF !important;      /* White background for the box */
+        border-radius: 0.3rem !important;          /* << ADJUST THIS FOR ROUNDNESS (e.g., 0.3rem or 5px) */
     }
 
     /* For st.text_input, st.date_input, st.time_input */
     div.stTextInput>div[data-baseweb="input"],
     div.stDateInput>div[data-baseweb="input"],
     div.stTimeInput>div[data-baseweb="input"] {
-        border: 1px solid #A9A9A9 !important;     /* Your visible border */
-        background-color: #FFFFFF !important;     /* White background for the box */
-        border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
+        border: 1px solid #A9A9A9 !important;      /* Your visible border */
+        background-color: #FFFFFF !important;      /* White background for the box */
+        border-radius: 0.3rem !important;          /* << ADJUST THIS FOR ROUNDNESS */
     }
 
     /* For st.number_input */
     .stNumberInput input[type="number"] {
-        border: 1px solid #A9A9A9 !important;     /* Your visible border */
-        background-color: #FFFFFF !important;     /* White background for the box */
-        border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
+        border: 1px solid #A9A9A9 !important;      /* Your visible border */
+        background-color: #FFFFFF !important;      /* White background for the box */
+        border-radius: 0.3rem !important;          /* << ADJUST THIS FOR ROUNDNESS */
     }
-    /* --- END OF CSS --- */
+    
+    /* --- NEW CSS FOR THE PREDICT BUTTON --- */
+    [data-testid="stSidebar"] .stButton > button {
+        border: 2px solid #000000;      /* Black border */
+        background-color: #FFFFFF;      /* White background */
+        color: #000000;                /* Black text */
+        border-radius: 0.5rem;          /* Slightly more rounded corners */
+        padding: 10px 24px;             /* NEW: Adds vertical (10px) and horizontal (24px) padding */
+        font-weight: bold;              /* NEW: Makes the text bolder */
+        font-size: 1.1em;               /* NEW: Makes the font slightly larger */
+        /* We removed 'width: 100%;' to make it less wide */
+    }
+
+    /* --- Active (on click) effect for the button --- */
+    [data-testid="stSidebar"] .stButton > button:active {
+        background-color: #E0E0E0;      /* Darker gray on click */
+        border-color: #000000;          /* Keep border black on click */
+    }
+            /* --- NEW: Custom CSS to Enhance Mobile Menu Button --- */
+
+    [data-testid="stSidebarNavToggler"] {
+        position: fixed;
+        left: 15px;
+        top: 15px;
+        z-index: 1000;
+        width: 45px;
+        height: 45px;
+        background-color: #FFFFFF;
+        border: 2px solid #000000;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        border-radius: 10px;
+    }
+
+    [data-testid="stSidebarNavToggler"] svg {
+        display: none;
+    }
+
+    [data-testid="stSidebarNavToggler"]::before {
+        content: '☰';
+        font-size: 28px;
+        color: #000000;
+        font-weight: bold;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -118,6 +212,7 @@ filtered_zip_codes = data[(data['state'] == state) & (data['city'] == city)]['zi
 bed = st.sidebar.number_input("**Number of Bedrooms**", min_value=1, max_value=10, value=3, step=1)
 bath = st.sidebar.number_input("**Number of Bathrooms**", min_value=1, max_value=10, value=3, step=1)
 house_size = st.sidebar.number_input("**House Size (SQFT)**", min_value=200, max_value=10000, value=2000, step=500)
+predict_button = st.sidebar.button("**Predict House Price**")
 
 if page == "Prediction":
     st.markdown("<div class='title'>House Price Predictor</div>", unsafe_allow_html=True)
@@ -125,7 +220,7 @@ if page == "Prediction":
     **Welcome!** This app predicts house prices based on key features like the number of bathrooms, bedrooms, house size, and location (state and city). Adjust the inputs in the sidebar to see the estimated price and potential down payment. Explore the 'Market Visualizations' page (select from the sidebar at the left of the page) for more in-depth charts and housing market trends.
     """)
 
-    if st.button("Predict House Price"):
+    if predict_button:
         feature_columns = ['bed', 'bath', 'state', 'city', 'house_size']
         input_data = pd.DataFrame({
             "state": [state],
