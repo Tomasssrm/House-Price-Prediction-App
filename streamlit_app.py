@@ -7,7 +7,102 @@ import us
 import joblib
 from matplotlib.ticker import FuncFormatter
 from huggingface_hub import hf_hub_download
+st.set_page_config(initial_sidebar_state="expanded")
+st.markdown("""
+    <style>
+    /* --- General & Input Styles (No Change) --- */
+    .main { padding: 20px; }
+    .title { text-align: center; font-size: 2em; color: #4CAF50; }
+    div[data-baseweb="select"] > div:first-child,
+    div.stTextInput>div[data-baseweb="input"],
+    div.stDateInput>div[data-baseweb="input"],
+    div.stTimeInput>div[data-baseweb="input"],
+    .stNumberInput input[type="number"] {
+        border: 1px solid #A9A9A9 !important;
+        background-color: #FFFFFF !important;
+        border-radius: 0.3rem !important;
+    }
+    [data-testid="stSidebar"] .stButton > button {
+        border: 2px solid #000000;
+        background-color: #FFFFFF;
+        color: #000000;
+        border-radius: 0.5rem;
+        padding: 10px 24px;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+    [data-testid="stSidebar"] .stButton > button:active {
+        background-color: #E0E0E0;
+        border-color: #000000;
+    }
 
+    /* PART 1: Styles the 'CLOSE' button when sidebar is open */
+    [data-testid="stSidebarCollapseButton"] {
+        /* Positioning */
+        position: fixed !important;
+        left: 15px !important;
+        top: 15px !important;
+        z-index: 1000 !important;
+        width: 45px !important;
+        height: 45px !important;
+        
+        /* Appearance */
+        background-color: #FFFFFF !important;
+        border: 2px solid #000000 !important;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2) !important;
+        border-radius: 10px !important;
+
+        /* --- NEW BRUTE FORCE VISIBILITY RULES --- */
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+    }
+    [data-testid="stSidebarCollapseButton"] svg {
+        display: none !important;
+    }
+    [data-testid="stSidebarCollapseButton"]::after {
+        content: '☰' !important;
+        color: #4CAF50 !important;
+        font-size: 28px !important;
+        font-weight: bold !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        pointer-events: none !important;
+    }
+
+    /* PART 2: Styles the 'OPEN' button (No Change to this part) */
+    button[data-testid="stBaseButton-headerNoPadding"] {
+        position: fixed !important;
+        left: 15px !important;
+        top: 15px !important;
+        z-index: 1000 !important;
+        width: 45px !important;
+        height: 45px !important;
+        background-color: #FFFFFF !important;
+        border: 2px solid #000000 !important;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2) !important;
+        border-radius: 10px !important;
+    }
+    button[data-testid="stBaseButton-headerNoPadding"] svg {
+        display: none !important;
+    }
+    button[data-testid="stBaseButton-headerNoPadding"]::after {
+        content: '☰' !important;
+        color: #4CAF50 !important;
+        font-size: 28px !important;
+        font-weight: bold !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        pointer-events: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 repo_id = "tomasssrm/house-price-prediction-app"
 @st.cache_data
 def load_clean_data():
@@ -40,148 +135,6 @@ model_low = load_low_model()
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("**Select a page**", ["Prediction", "Market Visualizations"])
 st.sidebar.title("Enter House Details")
-# st.markdown("""
-#     <style>
-#     .main {
-#         padding: 20px;
-#     }
-#     .title {
-#         text-align: center;
-#         font-size: 2em;
-#         color: #4CAF50;
-#     }
-#     .footer {
-#         text-align: center;
-#         padding: 10px;
-#         position: fixed;
-#         left: 0;
-#         bottom: 0;
-#         width: 100%;
-#         background-color: #D3D3D3;
-#         color: #4CAF50;
-#     }
-
-#     /* --- CSS FOR INPUT WIDGET BORDERS --- */
-
-#     /* For st.selectbox, st.multiselect */
-#     div[data-baseweb="select"] > div:first-child {
-#         border: 1px solid #A9A9A9 !important;     /* Your visible border */
-#         background-color: #FFFFFF !important;     /* White background for the box */
-#         border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS (e.g., 0.3rem or 5px) */
-#     }
-
-#     /* For st.text_input, st.date_input, st.time_input */
-#     div.stTextInput>div[data-baseweb="input"],
-#     div.stDateInput>div[data-baseweb="input"],
-#     div.stTimeInput>div[data-baseweb="input"] {
-#         border: 1px solid #A9A9A9 !important;     /* Your visible border */
-#         background-color: #FFFFFF !important;     /* White background for the box */
-#         border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
-#     }
-
-#     /* For st.number_input */
-#     .stNumberInput input[type="number"] {
-#         border: 1px solid #A9A9A9 !important;     /* Your visible border */
-#         background-color: #FFFFFF !important;     /* White background for the box */
-#         border-radius: 0.3rem !important;         /* << ADJUST THIS FOR ROUNDNESS */
-#     }
-#     /* --- END OF CSS --- */
-#     </style>
-#     """, unsafe_allow_html=True)
-st.markdown("""
-    <style>
-    .main {
-        padding: 20px;
-    }
-    .title {
-        text-align: center;
-        font-size: 2em;
-        color: #4CAF50;
-    }
-    .footer {
-        text-align: center;
-        padding: 10px;
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        background-color: #D3D3D3;
-        color: #4CAF50;
-    }
-
-    /* --- CSS FOR INPUT WIDGET BORDERS --- */
-
-    /* For st.selectbox, st.multiselect */
-    div[data-baseweb="select"] > div:first-child {
-        border: 1px solid #A9A9A9 !important;      /* Your visible border */
-        background-color: #FFFFFF !important;      /* White background for the box */
-        border-radius: 0.3rem !important;          /* << ADJUST THIS FOR ROUNDNESS (e.g., 0.3rem or 5px) */
-    }
-
-    /* For st.text_input, st.date_input, st.time_input */
-    div.stTextInput>div[data-baseweb="input"],
-    div.stDateInput>div[data-baseweb="input"],
-    div.stTimeInput>div[data-baseweb="input"] {
-        border: 1px solid #A9A9A9 !important;      /* Your visible border */
-        background-color: #FFFFFF !important;      /* White background for the box */
-        border-radius: 0.3rem !important;          /* << ADJUST THIS FOR ROUNDNESS */
-    }
-
-    /* For st.number_input */
-    .stNumberInput input[type="number"] {
-        border: 1px solid #A9A9A9 !important;      /* Your visible border */
-        background-color: #FFFFFF !important;      /* White background for the box */
-        border-radius: 0.3rem !important;          /* << ADJUST THIS FOR ROUNDNESS */
-    }
-    
-    /* --- NEW CSS FOR THE PREDICT BUTTON --- */
-    [data-testid="stSidebar"] .stButton > button {
-        border: 2px solid #000000;      /* Black border */
-        background-color: #FFFFFF;      /* White background */
-        color: #000000;                /* Black text */
-        border-radius: 0.5rem;          /* Slightly more rounded corners */
-        padding: 10px 24px;             /* NEW: Adds vertical (10px) and horizontal (24px) padding */
-        font-weight: bold;              /* NEW: Makes the text bolder */
-        font-size: 1.1em;               /* NEW: Makes the font slightly larger */
-        /* We removed 'width: 100%;' to make it less wide */
-    }
-
-    /* --- Active (on click) effect for the button --- */
-    [data-testid="stSidebar"] .stButton > button:active {
-        background-color: #E0E0E0;      /* Darker gray on click */
-        border-color: #000000;          /* Keep border black on click */
-    }
-            /* --- NEW: Custom CSS to Enhance Mobile Menu Button --- */
-
-    [data-testid="stSidebarNavToggler"] {
-        position: fixed;
-        left: 15px;
-        top: 15px;
-        z-index: 1000;
-        width: 45px;
-        height: 45px;
-        background-color: #FFFFFF;
-        border: 2px solid #000000;
-        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-        border-radius: 10px;
-    }
-
-    [data-testid="stSidebarNavToggler"] svg {
-        display: none;
-    }
-
-    [data-testid="stSidebarNavToggler"]::before {
-        content: '☰';
-        font-size: 28px;
-        color: #000000;
-        font-weight: bold;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 #Initialize session state variables
 if 'state' not in st.session_state:
