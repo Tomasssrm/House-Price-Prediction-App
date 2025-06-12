@@ -7,7 +7,7 @@ import us
 import joblib
 from matplotlib.ticker import FuncFormatter
 from huggingface_hub import hf_hub_download
-st.set_page_config(initial_sidebar_state="expanded")
+st.set_page_config(initial_sidebar_state="auto")
 st.markdown("""
     <style>
     /* --- General & Input Styles (No Change) --- */
@@ -166,6 +166,7 @@ bed = st.sidebar.number_input("**Number of Bedrooms**", min_value=1, max_value=1
 bath = st.sidebar.number_input("**Number of Bathrooms**", min_value=1, max_value=10, value=3, step=1)
 house_size = st.sidebar.number_input("**House Size (SQFT)**", min_value=200, max_value=10000, value=2000, step=500)
 predict_button = st.sidebar.button("**Predict House Price**")
+placeholder = st.sidebar.empty()
 
 if page == "Prediction":
     st.markdown("<div class='title'>House Price Predictor</div>", unsafe_allow_html=True)
@@ -194,6 +195,7 @@ if page == "Prediction":
 
         rounded_prediction = round(prediction)
         st.success(f"The predicted price for the house is **${rounded_prediction:,.2f}**.")
+        placeholder.success("Prediction complete! View the results on the main page.", icon = "✅")
 
         # Down Payment Estimates
         st.write("### Down Payment Estimates")
