@@ -142,7 +142,7 @@ st.sidebar.title("Enter House Details")
 
 #Initialize session state variables
 if 'state' not in st.session_state:
-    st.session_state['state'] = data['state'].unique()[1]
+    st.session_state['state'] = data['state'].unique()[2]
 if 'city' not in st.session_state:
     st.session_state['city'] = None
 
