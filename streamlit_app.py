@@ -22,6 +22,10 @@ st.markdown("""
         background-color: #FFFFFF !important;
         border-radius: 0.3rem !important;
     }
+    [data-testid="stRadio"] [data-testid="stWidgetLabel"] p {
+    font-size: 1.1rem !important; /* Makes the font about 10% larger */
+    font-weight: 600 !important;   /* Makes the font a bit bolder */
+    }
     [data-testid="stSidebar"] .stButton > button {
         border: 2px solid #000000;
         background-color: #FFFFFF;
@@ -167,6 +171,12 @@ bath = st.sidebar.number_input("**Number of Bathrooms**", min_value=1, max_value
 house_size = st.sidebar.number_input("**House Size (SQFT)**", min_value=200, max_value=10000, value=2000, step=500)
 predict_button = st.sidebar.button("**Predict House Price**")
 placeholder = st.sidebar.empty()
+st.sidebar.write("---") # Adds a separator line
+st.sidebar.warning(
+    "**Disclaimer:** This is an educational project. "
+    "Predictions are based on historical data and should not be used for "
+    "real-world financial decisions."
+)
 
 if page == "Prediction":
     st.markdown("<div class='title'>House Price Predictor</div>", unsafe_allow_html=True)
