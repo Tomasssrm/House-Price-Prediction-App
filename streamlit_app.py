@@ -197,12 +197,30 @@ if page == "Prediction":
         st.success(f"The predicted price for the house is **${rounded_prediction:,.2f}**.")
         placeholder.success("Prediction complete! View the results on the main page.", icon = "✅")
 
-        # Down Payment Estimates
-        st.write("### Down Payment Estimates")
+        # # Down Payment Estimates
+        st.write("### Down Payment Estimates For The Predicted House")
+        st.markdown(
+            '<p style="font-size: 0.9rem; color: #262730;">A down payment is the initial amount you pay upfront when buying a home. Below are two common loan scenarios for the predicted house:</p>',
+            unsafe_allow_html=True
+        )
         fha_down_payment = 0.035 * rounded_prediction
         conventional_loan = 0.2 * rounded_prediction
-        st.write(f"**FHA Loan Down Payment (3.5%)**: ${fha_down_payment:,.2f}")
-        st.write(f"**Conventional Loan Down Payment (20%)**: ${conventional_loan:,.2f}")
+        st.success(f"**FHA Loan Down Payment (3.5%)**: ${fha_down_payment:,.2f}")
+        st.markdown(
+            '<p style="font-size: 0.9rem; color: #262730;">A popular option for first-time buyers that often requires a lower down payment of just 3.5%.</p>',
+            unsafe_allow_html=True
+        )
+        with st.expander("Learn more about FHA loans"):
+            st.markdown("""
+            - **What is it?** An FHA loan is a mortgage insured by the Federal Housing Administration (FHA).
+            - **Mortgage Insurance:** With a low down payment, FHA loans require you to pay for mortgage insurance, which is an extra fee added to your monthly payment.
+            - **Key Requirement:** The property must be your primary residence (the home you live in) for at least one year after purchase.
+            """)
+        st.success(f"**Conventional Loan Down Payment (20%)**: ${conventional_loan:,.2f}")
+        st.markdown(
+            '<p style="font-size: 0.9rem; color: #262730;">Putting 20% down helps you avoid monthly mortgage insurance (PMI), resulting in a lower monthly payment.</p>',
+            unsafe_allow_html=True
+        )
 
         # Visualizations
         st.write(f"### House Price Distribution in {state}")
@@ -220,7 +238,8 @@ if page == "Prediction":
         # Labels and legend
         ax.set_title(f"House Price Distribution in {state}", fontsize=14)
         ax.set_xlabel("Price ($)", fontsize=12)
-        ax.set_ylabel("Count", fontsize=12)
+        ax.set_ylabel("Number of Houses", fontsize=12)
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f'{int(x/1000):,}k'))
         ax.legend()
 
         st.pyplot(fig)
@@ -228,7 +247,7 @@ if page == "Prediction":
 #Page 2
 if page == "Market Visualizations":
     st.markdown("<div class='title'>Housing Market Visualizations</div>", unsafe_allow_html=True)
-    st.write("Explore interactive charts and graphs to discover information, trends, and relationships within the housing market data.")
+    st.write("Explore interactive charts and graphs to discover information and trends about the housing market data.")
 
     # 1. Distribution of House Prices
     st.subheader("Distribution of House Prices by State")
@@ -332,7 +351,22 @@ if page == "Market Visualizations":
     st.plotly_chart(fig)
     
     #5. Correlation Heatmap
-    st.subheader("Correlation Matrix Heatmap")
+    st.subheader("How Features Influence Each Other")
+    st.markdown(
+    """
+    <div style="font-size: 0.9rem; color: #262730;">
+    This 'Influence Map' shows how different features are related. The number in each box (from -1 to 1) measures the strength of that relationship. 
+    <br><br>
+    Here’s how to read it:
+    <ul>
+        <li>🔴 <b>Warm Colors (Reds) & Numbers near +1:</b> Show a strong <b>positive</b> relationship. As one feature increases, the other tends to increase as well (e.g., as <i>House Size</i> goes up, <i>Price</i> goes up).</li>
+        <li>🔵 <b>Cool Colors (Blues) & Numbers near -1:</b> Show a strong <b>negative</b> relationship. As one feature increases, the other tends to decrease.</li>
+        <li>⚪️ <b>Light/White Colors & Numbers near 0:</b> Show a weak or non-existent relationship.</li>
+    </ul>
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
     fig, ax = plt.subplots(figsize=(8, 6))
     corr_matrix = data[['bed', 'bath', 'house_size', 'price']].corr()
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
