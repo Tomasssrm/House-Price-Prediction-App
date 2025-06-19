@@ -204,7 +204,7 @@ if page == "Prediction":
             prediction = initial_prediction
 
         rounded_prediction = round(prediction)
-        st.success(f"The predicted price for the house is **${rounded_prediction:,.2f}**.")
+        st.success(f"**The predicted price for the house is ${rounded_prediction:,.2f}**.")
         placeholder.success("Prediction complete! View the results on the main page.", icon = "✅")
 
         # # Down Payment Estimates
