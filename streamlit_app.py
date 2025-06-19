@@ -273,7 +273,7 @@ if page == "Market Visualizations":
     ax.axvline(median_price2, color='red', linestyle='dashed', linewidth=2, label=f"Median: ${median_price2:,.0f}")
     ax.set_title(f"Distribution of House Prices in {selected_state}")
     ax.set_xlabel("Price ($)")
-    ax.set_ylabel("Frequency")
+    ax.set_ylabel("Number of Houses")
     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f'{int(x/1000):,}k'))
     ax.legend()
     st.pyplot(fig)
